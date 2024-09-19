@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @subtask %>
+
+<div>
+  <%= link_to "Edit this subtask", edit_subtask_path(@subtask) %> |
+  <%= link_to "Back to subtasks", subtasks_path %>
+
+  <%= button_to "Destroy this subtask", @subtask, method: :delete %>
+</div>

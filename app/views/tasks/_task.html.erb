@@ -1,0 +1,47 @@
+<div id="<%= dom_id task %>">
+  <p>
+    <strong>Title:</strong>
+    <%= task.title %>
+  </p>
+
+  <p>
+    <strong>Notes:</strong>
+    <%= task.notes %>
+  </p>
+
+  <p>
+    <strong>Revised:</strong>
+    <%= task.revised %>
+  </p>
+
+  <p>
+    <strong>Repeat schedule:</strong>
+    <%= task.repeat_schedule %>
+  </p>
+
+  <p>
+    <strong>length:</strong>
+    <% if task.repeat_schedule["starting_time"].is_a?(Array) %>
+      <% task.repeat_schedule["starting_time"].zip(task.repeat_schedule["ending_time"]).each do |start_time, end_time| %>
+        <div>
+          <%= calculate_height(start_time, end_time) %>
+        </div>
+      <% end %>
+    <% else %>
+        <div>
+          <%= calculate_height(task.repeat_schedule["starting_time"], task.repeat_schedule["ending_time"]) %>
+        </div>
+    <% end %>
+  </p>
+
+  <p>
+    <strong>Margin Top:</strong>
+    <% if task.repeat_schedule["starting_time"].is_a?(Array) %>
+      <% task.repeat_schedule["starting_time"].each do |starting_time| %>
+        <%= calculate_margin_to_baseline(@smallest_value, starting_time)%>
+      <% end %>
+    <% else %>
+      <%= calculate_margin_to_baseline(@smallest_value, task.repeat_schedule["starting_time"])%>
+    <% end %>
+  </p>
+</div>

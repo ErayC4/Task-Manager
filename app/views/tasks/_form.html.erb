@@ -1,0 +1,48 @@
+<%= form_with(model: task) do |form| %>
+  <% if task.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(task.errors.count, "error") %> prohibited this task from being saved:</h2>
+
+      <ul>
+        <% task.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, style: "display: block" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :notes, style: "display: block" %>
+    <%= form.text_area :notes %>
+  </div>
+
+  <div>
+    <%= form.label :repetition, style: "display: block" %>
+    <%= form.check_box :revised %>
+  </div>
+
+  <div>
+    <%= form.label :repeat_schedule_ending_time, style: "display: block" %>
+    <%= form.time_field :repeat_schedule_ending_time, value: task.repeat_schedule&.dig('ending_time') %>
+  </div>
+
+  <div>
+    <%= form.label :repeat_schedule_starting_time, style: "display: block" %>
+    <%= form.time_field :repeat_schedule_starting_time, value: task.repeat_schedule&.dig('starting_time') %>
+  </div>
+
+  <div>
+    <%= form.label :repeat_schedule_repeat_on_day, style: "display: block" %>
+    <%= form.number_field :repeat_schedule_repeat_on_day, value: task.repeat_schedule&.dig('repeat_on_day') %>
+  </div>
+  <%= form.number_field :user_id, id: :task_user_id, value: current_user.id, type: :hidden%>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
