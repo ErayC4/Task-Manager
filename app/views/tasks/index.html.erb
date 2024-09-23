@@ -198,19 +198,21 @@
       </div>
 
       <div class="timeblock-grid-container">
-        <% (0..6).each do |day| %>
-        <div>
-          <% @tasks.each do |task| %>
-            <% if task.user == current_user %>
-              <%= render task %>
-              <%# if task.repeat_on_day == day || timeblock.dailyRepeat == true %>
-              <%# else %>
-                <%#= "" %>
-              <%# end %>
-            <% end %>
-          <% end %>
-        </div>
-        <% end %>
+        <% (0..6).each do |day| %> <%# Iteriere über die Tage der Woche %>
+          <div>
+            <% @tasks.each do |task| %>
+              <% if task.user == current_user %> <%# Überprüfe, ob die Aufgabe dem aktuellen Benutzer gehört %>
+                <% if task.repeat_schedule["repeat_on_day"].is_a?(Array) %>
+                  <% task.repeat_schedule["repeat_on_day"].each do |repeat_day| %> <%# Iteriere über die Wiederholungstage %>
+                    <% if repeat_day.include?(day.to_s) %> <%# Überprüfe, ob der Tag enthalten ist %>
+                      <%= render task %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %> <%# Überprüfe Benutzer %>
+            <% end %> <%# End of task iteration %>
+          </div>
+        <% end %> <%# End of day iteration %>
       </div>
     </div>
     </div>
