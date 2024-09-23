@@ -1,47 +1,46 @@
-<div id="<%= dom_id task %>">
-  <p>
-    <strong>Title:</strong>
-    <%= task.title %>
-  </p>
+<head>
+  <style>
+    .timeblock {
+      width: calc((100% - 32px * 6) / 7);
+      align: center;
+      color: black; 
+      margin-left: 7px;
+      border-radius: 8px;
+      background-color: orange;
+    }
 
-  <p>
-    <strong>Notes:</strong>
-    <%= task.notes %>
-  </p>
-
-  <p>
-    <strong>Revised:</strong>
-    <%= task.revised %>
-  </p>
-
-  <p>
-    <strong>Repeat schedule:</strong>
-    <%= task.repeat_schedule %>
-  </p>
-
-  <p>
-    <strong>length:</strong>
-    <% if task.repeat_schedule["starting_time"].is_a?(Array) %>
-      <% task.repeat_schedule["starting_time"].zip(task.repeat_schedule["ending_time"]).each do |start_time, end_time| %>
-        <div>
-          <%= calculate_height(start_time, end_time) %>
+  </style>
+</head>
+<%# hier wird durch tasks iteriert %>
+<div id="<%= dom_id task %>" >
+  <% if task.repeat_schedule["starting_time"].is_a?(Array) %>
+    <% task.repeat_schedule["starting_time"].zip(task.repeat_schedule["ending_time"]).each do |start_time, end_time| %>
+      <% if calculate_height(start_time, end_time) < 45 %>
+        <div class="timeblock" style=" heigth: <%= calculate_height(start_time, end_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, start_time) %>px">
+          <%= task.title %>
+          <%= start_time %>
+        </div>
+      <% else %>
+        <div class="timeblock" style="height: <%= calculate_height(start_time, end_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, start_time) %>px">
+            <%= task.title %>
+            <p style="margin: 0"><%= start_time %> - <%= end_time %></p>
+            
         </div>
       <% end %>
-    <% else %>
-        <div>
-          <%= calculate_height(task.repeat_schedule["starting_time"], task.repeat_schedule["ending_time"]) %>
-        </div>
     <% end %>
-  </p>
-
-  <p>
-    <strong>Margin Top:</strong>
-    <% if task.repeat_schedule["starting_time"].is_a?(Array) %>
-      <% task.repeat_schedule["starting_time"].each do |starting_time| %>
-        <%= calculate_margin_to_baseline(@smallest_value, starting_time)%>
-      <% end %>
+  <% else %>
+    <div>
+    <% if calculate_height(task.repeat_schedule["starting_time"], task.repeat_schedule["ending_time"]) < 45 %>
+      <div class="timeblock" style=" heigth: <%= calculate_height(task.repeat_schedule["starting_time"], task.repeat_schedule["ending_time"]) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.repeat_schedule["starting_time"]) %>px">
+        <%= task.title %>
+        <%= task.repeat_schedule["starting_time"] %>
+      </div>
     <% else %>
-      <%= calculate_margin_to_baseline(@smallest_value, task.repeat_schedule["starting_time"])%>
+      <div class="timeblock" style=" height: <%= calculate_height(task.repeat_schedule["starting_time"], task.repeat_schedule["ending_time"]) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.repeat_schedule["starting_time"]) %>px">
+          <%= task.title %>
+          <p style="margin: 0"><%= task.repeat_schedule["starting_time"] %> - <%= task.repeat_schedule["ending_time"] %> </p>
+      </div>
     <% end %>
-  </p>
+    </div>
+  <% end %>
 </div>
