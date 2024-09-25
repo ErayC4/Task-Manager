@@ -7,34 +7,32 @@ class TasksController < ApplicationController
   def index
     @tasks = Task.where(user_id: current_user.id)
     # Sammele alle gerundeten Startzeiten in einem Array
-    @get_all_starting_times = []
-    
-    @tasks.each do |task|
-      starting_times = task.repeat_schedule["starting_time"]
-      
-      if starting_times.is_a?(Array)
-        # Iteriere über jedes Element des Arrays und sammle die gerundeten Stunden
-        starting_times.each do |start_time|
-          @get_all_starting_times << roundStartingTimeToHour(start_time)
-        end
-      elsif starting_times.present?
-        # Einzelne Zeit verarbeiten und als Array speichern
-        @get_all_starting_times << roundStartingTimeToHour(starting_times)
+    @rounded_starting_time_array = @tasks.map do |task|
+      if task.user_id == current_user.id
+        roundStartingTimeToHour(task.starting_time)
+      else
+        24 
+        #some number over 23, because there is no time where it hits 24, thus, if the user is not the current user, 
+        #it will always be bigger than anytime, which does not screw with the baseline
       end
     end
-    @smallest_value = smallestValueInArray(@get_all_starting_times)
+
+    @smallest_value = smalles_value(@rounded_starting_time_array)
 
   end
 
   def roundStartingTimeToHour(start_time)
-    start_time_part = start_time.split(":").map(&:to_i)
-    hour = start_time_part[0]
-    hour
+    if start_time.is_a?(String)
+      start_time_part = start_time.split(":").map(&:to_i)
+      hour = start_time_part[0]
+      hour
+    end
+    
   end
 
   
-  def smallestValueInArray(start_times)
-    return 6 if start_times.empty?
+  def smalles_value(start_times)
+    return 6 if start_times.empty? || start_times.include?(nil)
     smallest_value = start_times[0]
     start_times.each do |i| 
         if i < smallest_value
@@ -59,37 +57,15 @@ class TasksController < ApplicationController
 
   # POST /tasks or /tasks.json
   def create
-    # Suche nach einer bestehenden Task mit dem gleichen Titel
-    existing_task = Task.find_by(title: task_params[:title])
-  
-    if existing_task
-      # Kombiniere die repeat_schedule von der neuen und bestehenden Task
-      merged_schedule = merge_repeat_schedules(existing_task.repeat_schedule, task_params[:repeat_schedule])
-  
-      # Aktualisiere die bestehende Task mit den gemergten Daten
-      if existing_task.update(repeat_schedule: merged_schedule)
-        respond_to do |format|
-          format.html { redirect_to existing_task, notice: "Task was successfully merged." }
-          format.json { render :show, status: :ok, location: existing_task }
-        end
+    #@timeblock = Timeblock.new(timeblock_params)
+    @task = current_user.tasks.build(task_params)
+    respond_to do |format|
+      if @task.save
+        format.html { redirect_to task_url(@task), notice: "Task was successfully created." }
+        format.json { render :show, status: :created, location: @task }
       else
-        respond_to do |format|
-          format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: existing_task.errors, status: :unprocessable_entity }
-        end
-      end
-    else
-      # Wenn keine Task existiert, erstelle eine neue Task
-      #@task = Task.new(task_params)
-      @task = current_user.tasks.build(task_params)
-      respond_to do |format|
-        if @task.save
-          format.html { redirect_to @task, notice: "Task was successfully created." }
-          format.json { render :show, status: :created, location: @task }
-        else
-          format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: @task.errors, status: :unprocessable_entity }
-        end
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @task.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -138,13 +114,7 @@ class TasksController < ApplicationController
     end
     # Only allow a list of trusted parameters through.
     def task_params
-      params.require(:task).permit(:title, :notes, :revised, :repeat_schedule_ending_time, :repeat_schedule_starting_time, :repeat_schedule_repeat_on_day, :user_id).tap do |whitelisted|
-        whitelisted[:repeat_schedule] = {
-          'ending_time' => whitelisted.delete(:repeat_schedule_ending_time),
-          'starting_time' => whitelisted.delete(:repeat_schedule_starting_time),
-          'repeat_on_day' => whitelisted.delete(:repeat_schedule_repeat_on_day)
-        }
-      end
+      params.require(:task).permit(:title, :notes, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id)    
     end
     
 end

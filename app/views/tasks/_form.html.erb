@@ -27,18 +27,18 @@
   </div>
 
   <div>
-    <%= form.label :repeat_schedule_ending_time, style: "display: block" %>
-    <%= form.time_field :repeat_schedule_ending_time, value: task.repeat_schedule&.dig('ending_time') %>
+    <%= form.label :ending_time, style: "display: block" %>
+    <%= form.time_field :ending_time %>
   </div>
 
   <div>
-    <%= form.label :repeat_schedule_starting_time, style: "display: block" %>
-    <%= form.time_field :repeat_schedule_starting_time, value: task.repeat_schedule&.dig('starting_time') %>
+    <%= form.label :starting_time, style: "display: block" %>
+    <%= form.time_field :starting_time %>
   </div>
 
   <div>
-    <%= form.label :repeat_schedule_repeat_on_day, style: "display: block" %>
-    <%= form.number_field :repeat_schedule_repeat_on_day, value: task.repeat_schedule&.dig('repeat_on_day') %>
+    <%= form.label :repeat_schedule, style: "display: block" %>
+    <%= form.text_field :repeat_schedule %>
   </div>
   <%= form.number_field :user_id, id: :task_user_id, value: current_user.id, type: :hidden%>
 

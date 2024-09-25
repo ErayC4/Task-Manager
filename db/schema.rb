@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_16_200559) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_25_092916) do
   create_table "subtasks", force: :cascade do |t|
     t.string "title"
     t.string "left_of_at"
@@ -24,10 +24,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_16_200559) do
     t.string "title"
     t.text "notes"
     t.boolean "revised"
-    t.json "repeat_schedule"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.string "starting_time"
+    t.string "ending_time"
+    t.boolean "is_revision"
+    t.string "repeat_schedule"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
