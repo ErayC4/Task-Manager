@@ -13,7 +13,7 @@
 </head>
 <div id="<%= dom_id task %>" >
   <% if calculate_height(task.starting_time, task.ending_time) < 45 %>
-    <div class="timeblock" style=" heigth: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px">
+    <div class="timeblock" style=" height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px">
       <%= task.title %>
       <%= task.starting_time %>
     </div>
