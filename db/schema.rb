@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_25_092916) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_30_112945) do
   create_table "subtasks", force: :cascade do |t|
     t.string "title"
     t.string "left_of_at"
@@ -18,6 +18,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_25_092916) do
     t.json "make_later"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "task_id"
+    t.index ["task_id"], name: "index_subtasks_on_task_id"
   end
 
   create_table "tasks", force: :cascade do |t|
