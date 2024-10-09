@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_30_112945) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_09_094234) do
   create_table "subtasks", force: :cascade do |t|
     t.string "title"
     t.string "left_of_at"
@@ -20,6 +20,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_30_112945) do
     t.datetime "updated_at", null: false
     t.integer "task_id"
     t.index ["task_id"], name: "index_subtasks_on_task_id"
+  end
+
+  create_table "subtasks_tasks", id: false, force: :cascade do |t|
+    t.integer "subtask_id", null: false
+    t.integer "task_id", null: false
+    t.index ["subtask_id", "task_id"], name: "index_subtasks_tasks_on_subtask_id_and_task_id"
+    t.index ["task_id", "subtask_id"], name: "index_subtasks_tasks_on_task_id_and_subtask_id"
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -33,6 +40,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_30_112945) do
     t.string "ending_time"
     t.boolean "is_revision"
     t.string "repeat_schedule"
+    t.integer "subtask_id"
+    t.index ["subtask_id"], name: "index_tasks_on_subtask_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 

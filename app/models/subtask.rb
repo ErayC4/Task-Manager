@@ -1,3 +1,3 @@
 class Subtask < ApplicationRecord
-  belongs_to :tasks
+  has_and_belongs_to_many :tasks
 end

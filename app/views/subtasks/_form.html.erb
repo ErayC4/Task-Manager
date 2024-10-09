@@ -31,6 +31,15 @@
     <%= form.text_field :make_later %>
   </div>
 
+  <% Task.all.each do |task| %>
+    <% if current_user == task.user%>
+      <div>
+        <%= check_box_tag "taskxy", task.id, subtask.task_id&.include?(task.id) %>
+        <%= task.title %>
+      </div>
+    <% end %>
+  <% end %>
+
   <div>
     <%= form.submit %>
   </div>

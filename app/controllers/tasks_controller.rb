@@ -114,7 +114,7 @@ class TasksController < ApplicationController
     end
     # Only allow a list of trusted parameters through.
     def task_params
-      params.require(:task).permit(:title, :notes, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id)    
+      params.require(:task).permit(:title, :notes, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id, :subtask_id)    
     end
     
 end
