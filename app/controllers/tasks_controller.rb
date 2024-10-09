@@ -105,13 +105,6 @@ class TasksController < ApplicationController
       @task = Task.find(params[:id])
     end
 
-    def merge_repeat_schedules(existing_schedule, new_schedule)
-      {
-        'ending_time' => Array(existing_schedule['ending_time']).concat([new_schedule['ending_time']]).compact,
-        'starting_time' => Array(existing_schedule['starting_time']).concat([new_schedule['starting_time']]).compact,
-        'repeat_on_day' => Array(existing_schedule['repeat_on_day']).concat([new_schedule['repeat_on_day']]).compact
-      }
-    end
     # Only allow a list of trusted parameters through.
     def task_params
       params.require(:task).permit(:title, :notes, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id, :subtask_id)    

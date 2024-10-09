@@ -191,11 +191,12 @@
                 <div class="todo-now-container">
                   <p class="todo-now">
                     <span style="padding-left: 12px;">
-                      <% if task.subtasks.present? %>
-                        <% task.subtasks.each do |subtask| %>
+                      <% @subtasks.each do |subtask| %>
+                        <% if subtask.task_id == task.id %>
                           <%= subtask.title %>
                         <% end %>
                       <% end %>
+                      
                       
                     </span>
                   </p>
