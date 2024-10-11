@@ -194,10 +194,11 @@
                       <% @subtasks.each do |subtask| %>
                         <% if subtask.task_id == task.id %>
                           <%= subtask.title %>
+                          <%= button_to 'Toggle Finished', toggle_finished_subtask_path(subtask), method: :patch, data: { confirm: 'Are you sure?' } %>
+                          <%= subtask.finished %>
                         <% end %>
                       <% end %>
-                      
-                      
+                    
                     </span>
                   </p>
                   <svg xmlns="http://www.w3.org/2000/svg" class="check-box" width="20" height="20" fill="#ADA7C8" viewBox="0 0 16 16">

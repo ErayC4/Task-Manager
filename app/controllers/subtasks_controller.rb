@@ -73,6 +73,14 @@ class SubtasksController < ApplicationController
     end
   end
 
+  # app/controllers/subtasks_controller.rb
+  def toggle_finished
+    @subtask = Subtask.find(params[:id])
+    @subtask.update(finished: !@subtask.finished) # Invertiert den aktuellen Status
+    redirect_to subtasks_path # Zurück zur Übersicht oder wo auch immer du hin möchtest
+  end
+
+
   # DELETE /subtasks/1 or /subtasks/1.json
   def destroy
     @subtask.destroy!
