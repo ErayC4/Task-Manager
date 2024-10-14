@@ -10,25 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_09_094234) do
-  create_table "subtasks", force: :cascade do |t|
-    t.string "title"
-    t.string "left_of_at"
-    t.boolean "finished"
-    t.json "make_later"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "task_id"
-    t.index ["task_id"], name: "index_subtasks_on_task_id"
-  end
-
-  create_table "subtasks_tasks", id: false, force: :cascade do |t|
-    t.integer "subtask_id", null: false
-    t.integer "task_id", null: false
-    t.index ["subtask_id", "task_id"], name: "index_subtasks_tasks_on_subtask_id_and_task_id"
-    t.index ["task_id", "subtask_id"], name: "index_subtasks_tasks_on_task_id_and_subtask_id"
-  end
-
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_073630) do
   create_table "tasks", force: :cascade do |t|
     t.string "title"
     t.text "notes"

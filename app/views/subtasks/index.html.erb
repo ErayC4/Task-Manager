@@ -139,41 +139,7 @@
 }
 </style>
 <body>
-<script>
-  // Dein JavaScript-Code hier
-  document.addEventListener('DOMContentLoaded', function() {
-    // Hole alle Elemente mit der Klasse "todo-card"
-    var todoCards = document.querySelectorAll('.todo-card');
-    
-    // Füge jedem Element einen Event-Listener hinzu
-    todoCards.forEach(function(todoCard) {
-        todoCard.addEventListener('click', function() {
-            // Greife auf das data-task-id-Attribut zu
-            var taskId = todoCard.dataset.taskId;
-            console.log('clicked task id: ' + taskId);
-            
-            // Hole alle Elemente mit der Klasse "journey-container"
-            const journeyContainers = document.querySelectorAll('.right-side');
-            
-            // Durch alle journeyContainers iterieren
-            journeyContainers.forEach(container => {
-                // Den Wert des 'data-task'-Attributs auslesen
-                const taskValue = container.getAttribute('data-task');
-                
-                // Überprüfe, ob die taskId in den journeyContainers vorhanden ist
-                if (taskId === taskValue) {
-                    container.style.display = 'block'; // Zeige das Element an
-                } else {
-                    container.style.display = 'none'; // Blende das Element aus
-                }
-            });
-        });
-    });
-});
 
-
-  
-</script>
 <div id="subtasks">
   <div class="main-container">
     <div>
@@ -182,40 +148,50 @@
           <div class="left-side">
             <div class="dot-and-time">
               <div class="dot"></div>
-              <p><%= task.starting_time %> - <%= task.ending_time %></p>
+              <p><%= task.starting_time %> - <%= task.ending_time %> <%= !task.subtask_id.present? %></p>
             </div>
 
             <div class="todo-card-container">
               <div class="todo-card" id="todo-card" data-task-id="<%= task.id %>">
                 <p class="task-name"><%= task.title %></p>
+                <% if !task.subtask_id.present? %>
+                            <div class="add-new-task-container">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="plus-svg" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                              </svg>
+                              <p>
+                                <span style="padding-left: 4px; padding-right: 12px;">
+                                  <%= link_to "New subtask", new_subtask_path %>
+                                </span>
+                              </p>
+                            </div>
+                          <% end %>
                 <div class="todo-now-container">
-                  <p class="todo-now">
-                    <span style="padding-left: 12px;">
+                    <div style="padding-left: 12px;">
                       <% @subtasks.each do |subtask| %>
+
                         <% if subtask.task_id == task.id %>
                           <%= subtask.title %>
-                          <%= button_to 'Toggle Finished', toggle_finished_subtask_path(subtask), method: :patch, data: { confirm: 'Are you sure?' } %>
-                          <%= subtask.finished %>
+                          <%= button_to 'Toggle Finished', toggle_finished_subtask_path(subtask), method: :patch %>
+                          <% if subtask.finished %>
+                            <div class="add-new-task-container">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="plus-svg" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                              </svg>
+                              <p>
+                                <span style="padding-left: 4px; padding-right: 12px;">
+                                  <%= link_to "New subtask", new_subtask_path %>
+                                </span>
+                              </p>
+                            </div>
+                          <% end %>
                         <% end %>
                       <% end %>
-                    
-                    </span>
-                  </p>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="check-box" width="20" height="20" fill="#ADA7C8" viewBox="0 0 16 16">
-                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                  </svg>
+            
+                    </div>
                 </div>
 
-                <div class="add-new-task-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="plus-svg" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-                  </svg>
-                  <p>
-                    <span style="padding-left: 4px; padding-right: 12px;">
-                      <%= link_to "New subtask", new_subtask_path %>
-                    </span>
-                  </p>
-                </div>
+                
               </div>
             </div>
           </div>

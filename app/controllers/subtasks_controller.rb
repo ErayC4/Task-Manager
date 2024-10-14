@@ -78,6 +78,7 @@ class SubtasksController < ApplicationController
     @subtask = Subtask.find(params[:id])
     @subtask.update(finished: !@subtask.finished) # Invertiert den aktuellen Status
     redirect_to subtasks_path # Zurück zur Übersicht oder wo auch immer du hin möchtest
+    
   end
 
 
