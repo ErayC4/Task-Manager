@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_073630) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_182744) do
   create_table "tasks", force: :cascade do |t|
     t.string "title"
     t.text "notes"
@@ -23,6 +23,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_073630) do
     t.boolean "is_revision"
     t.string "repeat_schedule"
     t.integer "subtask_id"
+    t.string "subtask_title"
+    t.string "subtask_left_of_at"
+    t.boolean "subtask_finished"
     t.index ["subtask_id"], name: "index_tasks_on_subtask_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end

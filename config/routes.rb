@@ -1,8 +1,17 @@
 Rails.application.routes.draw do
   get 'home/index'
-  
+  get 'subtasks/index'
+
   resources :tasks
   devise_for :users
+  # config/routes.rb
+  resources :tasks do
+    member do
+      get 'edit_subtask', to: 'subtasks#edit'
+      patch 'update_subtask', to: 'subtasks#update'
+    end
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

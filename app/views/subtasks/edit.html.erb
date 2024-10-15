@@ -1,0 +1,20 @@
+<!-- app/views/subtasks/edit.html.erb -->
+<h1>Edit Subtask for Task: <%= @task.title %></h1>
+
+<%= form_with(model: @task, url: update_subtask_task_path(@task), method: :patch, local: true) do |f| %>
+  <div class="field">
+    <%= f.label :subtask_title, "Subtask Title" %>
+    <%= f.text_field :subtask_title %>
+  </div>
+
+  <div class="field">
+    <%= f.label :subtask_finished, "Subtask Finished" %>
+    <%= f.check_box :subtask_finished %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update Subtask" %>
+  </div>
+<% end %>
+
+<%= link_to 'Back to Task', task_path(@task) %>

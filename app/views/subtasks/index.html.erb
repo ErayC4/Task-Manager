@@ -1,0 +1,13 @@
+Hier ist die index page
+<%= render "subtasks/subtask" %>
+
+<h1>Subtasks</h1>
+
+<ul>
+  <% @tasks.each do |task| %>
+    <li>
+      <%= task.title %>
+      <%= link_to 'Edit Subtask', edit_subtask_task_path(task) %>
+    </li>
+  <% end %>
+</ul>
