@@ -3,7 +3,9 @@ class SubtasksController < ApplicationController
   before_action :set_task, only: [:edit, :update]
   def index
     @tasks = Task.where(user_id: current_user.id)
-
+    day_of_week = Time.now.wday
+    puts day_of_week
+    @day_index = day_of_week
   end
 
   def toggle_finished
