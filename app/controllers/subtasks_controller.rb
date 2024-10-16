@@ -6,6 +6,20 @@ class SubtasksController < ApplicationController
 
   end
 
+  def toggle_finished
+    @task = Task.find(params[:id])
+    if @task.update(subtask_finished: !@task.subtask_finished)
+      respond_to do |format|
+        format.html { redirect_to subtasks_path, notice: 'Subtask status updated.' }
+        format.js   # Optional für AJAX
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to subtasks_path, alert: 'Error updating subtask.' }
+      end
+    end
+  end
+
   def edit
     # Diese Aktion zeigt das Formular zum Bearbeiten des Subtasks eines bestimmten Tasks
   end

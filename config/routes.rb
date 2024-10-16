@@ -11,7 +11,11 @@ Rails.application.routes.draw do
       patch 'update_subtask', to: 'subtasks#update'
     end
   end
-
+  resources :subtasks, only: [:index] do
+    member do
+      patch :toggle_finished  # Fügt eine Patch-Route zum Togglen hinzu
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
