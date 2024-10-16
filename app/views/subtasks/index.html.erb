@@ -1,19 +1,22 @@
 <h1>Todays Missions</h1>
 <% @tasks.each do |task| %>
-    <% if task.repeat_schedule.include?(@day_index.to_s) && task.user == current_user %>
-    <li>
-      <%= task.title %>
-        <% if !task.subtask_title %>
-            <%= link_to 'Add Subtask', edit_subtask_task_path(task) %>
-        <% else %>
-            <p><%= task.subtask_title %></p>
-            <%= button_to "Toggle Subtask Finished", toggle_finished_subtask_path(task), method: :patch, class: "btn btn-primary" %>
-        <% end %>
+        <% if task.repeat_schedule.include?(@day_index.to_s) && task.user == current_user %>
+        <li>
+        <div onclick="window.location.href='/tasks/<%= task.id %>';" style="cursor: pointer;">
+        <%= task.title %>
+        </div>  
 
-        <% if task.subtask_finished %>
-            <%= link_to 'Add New Subtask', edit_subtask_task_path(task) %>
+            <% if !task.subtask_title %>
+                <%= link_to 'Add Subtask', edit_subtask_task_path(task) %>
+            <% else %>
+                <p><%= task.subtask_title %></p>
+                <%= button_to "Toggle Subtask Finished", toggle_finished_subtask_path(task), method: :patch, class: "btn btn-primary" %>
+            <% end %>
+
+            <% if task.subtask_finished %>
+                <%= link_to 'Add New Subtask', edit_subtask_task_path(task) %>
+            <% end %>
+        </li>
         <% end %>
-    </li>
-    <% end %>
 <% end %>
 

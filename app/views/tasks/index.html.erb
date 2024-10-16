@@ -67,6 +67,15 @@
       text-align: center;
     }
 
+    .timeblock {
+      width: calc((100% - 32px * 6) / 7);
+      align: center;
+      color: black; 
+      margin-left: 7px;
+      border-radius: 8px;
+      background-color: orange;
+    }
+
     .timeblock-grid-container {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -203,7 +212,17 @@
             <% @tasks.each do |task| %>
               <% if task.user == current_user %> <%# Überprüfe, ob die Aufgabe dem aktuellen Benutzer gehört %>
                 <% if task.repeat_schedule && task.repeat_schedule.include?(day.to_s) %> <%# Überprüfe, ob der Tag enthalten ist %>
-                  <%= render task %>
+                  <% if calculate_height(task.starting_time, task.ending_time) < 45 %>
+                    <div class="timeblock" style=" height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px">
+                      <%= task.title %>
+                      <%= task.starting_time %>
+                    </div>
+                  <% else %>
+                    <div class="timeblock" style="height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px">
+                        <%= task.title %>
+                        <p style="margin: 0"><%= task.starting_time %> - <%= task.ending_time %></p>
+                    </div>
+                  <% end %>
                 <% end %>
                 
               <% end %> <%# Überprüfe Benutzer %>
