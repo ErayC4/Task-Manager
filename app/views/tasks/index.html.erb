@@ -99,8 +99,8 @@
       gap: 4px;
       background-color: black;
       margin-bottom: 32px;
-
     }
+    
     .container{
       padding: 64px 128px;
       background-color: white;
@@ -206,12 +206,12 @@
               <% if task.user == current_user %> <%# Überprüfe, ob die Aufgabe dem aktuellen Benutzer gehört %>
                 <% if task.repeat_schedule && task.repeat_schedule.include?(day.to_s) %> <%# Überprüfe, ob der Tag enthalten ist %>
                   <% if calculate_height(task.starting_time, task.ending_time) < 45 %>
-                    <div class="timeblock" style=" height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px; background-color: <%= task.color %> ">
+                    <div onclick="window.location.href='/tasks/<%= task.id %>';" class="timeblock" style="cursor: pointer; height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px; background-color: <%= task.color %> ">
                       <%= task.title %>
                       <%= task.starting_time %>
                     </div>
                   <% else %>
-                    <div class="timeblock" style="height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px; background-color: <%= task.color %>">
+                    <div onclick="window.location.href='/tasks/<%= task.id %>';"class="timeblock" style="cursor: pointer; height: <%= calculate_height(task.starting_time, task.ending_time) %>px; margin-top: <%= calculate_margin_to_baseline(@smallest_value, task.starting_time) %>px; background-color: <%= task.color %>">
                         <%= task.title %>
                         <p style="margin: 0"><%= task.starting_time %> - <%= task.ending_time %></p>
                     </div>
