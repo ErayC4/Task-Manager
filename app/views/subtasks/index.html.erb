@@ -12,27 +12,60 @@
 
     .create-subtask-button {
         font-size: 16px;
-        margin-top: 4px;
-      text-decoration: none; 
-      padding: 8px 16px;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      display: flex;
-      background-color: black;
+        text-decoration: none; 
+        padding: 8px 16px;
+        border: none;
+        color: black;
+        border-radius: 8px;
+        display: flex;
+        background-color: white;
         display: inline-block;
     }
     .subtask-container {
         display: flex;
         gap: 4px;
-        height: 32px;
         border: none;
+        align-items: center;
+        margin-top: 12px;
     }
 
     .finished-button {
         background-color: transparent;
         border: none;
     }
+    .task-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-top: 16px;
+    }
+    .left-of-inputfield {
+    width: 100%; /* Nimmt die volle Breite des übergeordneten Containers */
+    max-width: 100%; /* Überschreitet nicht die Breite des Containers */
+    box-sizing: border-box; /* Stellt sicher, dass Padding und Border in die Breitenberechnung einbezogen werden */
+}
+
+.notes-textarea {
+    width: 100%;
+    max-width: 100%; /* Verhindert, dass das Textarea-Element breiter als der Container wird */
+    box-sizing: border-box; /* Stellt sicher, dass Padding und Border in die Breitenberechnung einbezogen werden */
+}
+
+.repeat-button {
+    background-color: white;
+    border: none;
+    display: flex;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 12px;
+}
+.finished-buttons-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
 </style>
 
 <% @tasks.each do |task| %>
@@ -46,23 +79,45 @@
                 <% if !task.subtask_title %>
                     <%= link_to 'Add Subtask', edit_subtask_task_path(task), class: 'create-subtask-button' %>
                 <% else %>
-                    <div class="subtask-container" >
+                    <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                 <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
                             </svg>
                         <% end %>
-
-                        <p style="padding-top: 1px;"><%= task.subtask_title %></p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                        </svg>
+                        
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                        </svg>
+                        
+                        <input value="<%= task.subtask_title %>" style="border: none; border-radius: 46px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%); width: 100%">
                     </div>
                     
 
                 <% end %>
-
                 <% if task.subtask_finished %>
-                    <%= link_to 'Add New Subtask', edit_subtask_task_path(task), class: 'create-subtask-button' %>
+                    <%= link_to 'Add New Subtask', edit_subtask_task_path(task), class: 'create-subtask-button'%>
                 <% end %>
+                <div class="task-grid">
+                    <div>
+                        <p >where i left of</p>
+                        <input value="<%= task.subtask_left_of_at%>" style="border: none; border-radius: 46px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" type="text" class="left-of-inputfield">
+                        <p>Questions: </p>
+
+                    </div>
+                    <div>
+                        <p>Notes: </p>
+                        <textarea class="notes-textarea" style="border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%); "></textarea>
+                    </div>
+                </div>
+                
+                
                 </div>
             </div>
         </li>

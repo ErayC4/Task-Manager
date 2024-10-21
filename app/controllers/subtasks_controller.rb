@@ -4,7 +4,11 @@ class SubtasksController < ApplicationController
   def index
     @tasks = Task.where(user_id: current_user.id)
     day_of_week = Time.now.wday
+    if day_of_week == 0 
+      day_of_week = 7
+    end
     puts day_of_week
+    
     @day_index = day_of_week
   end
 

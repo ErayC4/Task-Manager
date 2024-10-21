@@ -7,14 +7,12 @@
     <%= f.text_field :subtask_title %>
   </div>
 
-  <div class="field">
-    <%= f.label :subtask_finished, "Subtask Finished" %>
-    <%= f.check_box :subtask_finished %>
-  </div>
 
+  <p>Add to all Tasks Named: XYZ ??? </p>
   <div class="actions">
     <%= f.submit "Update Subtask" %>
   </div>
+
 <% end %>
 
 <%= link_to 'Back to Task', "/subtasks/index" %>
