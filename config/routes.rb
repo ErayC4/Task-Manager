@@ -5,10 +5,15 @@ Rails.application.routes.draw do
   resources :tasks
   devise_for :users
   # config/routes.rb
+  
   resources :tasks do
     member do
       get 'edit_subtask', to: 'subtasks#edit'
       patch 'update_subtask', to: 'subtasks#update'
+
+      #for autosave
+      patch :update_field
+
     end
   end
   resources :subtasks, only: [:index] do

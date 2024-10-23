@@ -2,6 +2,7 @@ class TasksController < ApplicationController
   before_action :set_task, only: %i[ show edit update destroy ]
   before_action :authenticate_user!
   before_action :correct_user, only: %i[show edit update destroy]
+  before_action :set_task, only: [:update_field]
 
   # GET /tasks or /tasks.json
   def index
@@ -93,6 +94,17 @@ class TasksController < ApplicationController
     end
   end
 
+  def update_field
+    field_name = params[:field_name]  # Get field name from params
+    field_value = params[:field_value]  # Get new value from params
+
+    # Ensure that the field is allowed to be updated
+    if @task.update(field_name => field_value)
+      render json: { status: 'success', field_name: field_name, field_value: field_value }
+    else
+      render json: { status: 'error', message: @task.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
+  end
   
   def correct_user
     @task = current_user.tasks.find_by(id: params[:id])
