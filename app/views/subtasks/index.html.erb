@@ -131,40 +131,23 @@
                 <p style="border-bottom: 1px solid black; padding-bottom: 2px;">  <%= task.starting_time %> - <%= task.ending_time %> </p>
                 
                 <div style="margin-top: 4px">
-                <input type="text" class="autosave-field" 
-                        data-task-id="<%= task.id %>" 
-                        data-field-name="subtask_title"
-                        value="<%= task.subtask_title %>" 
-                        style="border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
-                />
+                    
+                
 
-                <% if !task.subtask_title %>
-                    <%= link_to 'Add Subtask', edit_subtask_task_path(task), class: 'create-subtask-button' %>
-                <% else %>
                     <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                 <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                            </svg>
-                            
+                            </svg>  
                         <% end %>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                        
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
-                            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
-                        </svg>
-                                                
+                        <input type="text" class="autosave-field" 
+                        data-task-id="<%= task.id %>" 
+                        data-field-name="subtask_title"
+                        value="<%= task.subtask_title %>" 
+                        style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
+                />
                     </div>
-
-                <% end %>
-                <% if task.subtask_finished %>
-                    <%= link_to 'Add New Subtask', edit_subtask_task_path(task), class: 'create-subtask-button'%>
-                <% end %>
                 <div class="task-grid">
                     <div>
                         <p >where i left of</p>
@@ -172,7 +155,7 @@
                         data-task-id="<%= task.id %>" 
                         data-field-name="subtask_left_of_at"
                         value="<%= task.subtask_left_of_at %>" 
-                        style="border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" />
+                        style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" />
 
                         <p>Questions: </p>
 
@@ -182,8 +165,7 @@
                         <textarea class="autosave-field" 
                             data-task-id="<%= task.id %>" 
                             data-field-name="notes" 
-                            style="border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.notes %>
-                        </textarea>
+                            style="box-sizing: border-box; height: 192px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.notes %></textarea>
 
                     </div>
                 </div>

@@ -29,4 +29,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  
+  root "home#index"  # Setzt die Root-Route auf home#index
 end
