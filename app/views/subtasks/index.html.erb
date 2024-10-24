@@ -148,16 +148,21 @@
                         style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
                 />
                     </div>
+
                 <div class="task-grid">
                     <div>
-                        <p >where i left of</p>
+                        <p >where i left of:</p>
                         <input type="text" class="autosave-field" 
                         data-task-id="<%= task.id %>" 
                         data-field-name="subtask_left_of_at"
                         value="<%= task.subtask_left_of_at %>" 
                         style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" />
 
-                        <p>Questions: </p>
+                        <p style="margin-top: 8px;">Questions: </p>
+                        <textarea class="autosave-field" 
+                            data-task-id="<%= task.id %>" 
+                            data-field-name="questions" 
+                            style="box-sizing: border-box; height: 128px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.questions %></textarea>
 
                     </div>
                     <div>
@@ -165,7 +170,9 @@
                         <textarea class="autosave-field" 
                             data-task-id="<%= task.id %>" 
                             data-field-name="notes" 
-                            style="box-sizing: border-box; height: 192px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.notes %></textarea>
+                            style="box-sizing: border-box; height: 180px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.notes %></textarea>
+
+                    
 
                     </div>
                 </div>
