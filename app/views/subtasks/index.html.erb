@@ -26,7 +26,7 @@
         gap: 4px;
         border: none;
         align-items: center;
-        margin-top: 12px;
+        
     }
 
     .finished-button {
@@ -133,7 +133,7 @@
                 <div style="margin-top: 4px">
                     
                 
-
+                    <p style="margin-top: 12px;">Thats what to do:</p>
                     <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
