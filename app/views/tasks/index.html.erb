@@ -168,40 +168,27 @@
     <div class="content">
       <div class="weekdays-navbar-container">
         
-        <% # Berechnung der Anzahl der Tage im aktuellen Monat %>
-<% def days_in_month(year, month) %>
-  <%= Date.new(year, month, -1).day %>
-<% end %>
+        <% (1..7).each do |day| %>
+          <div class="weekday-item">
+            <p style="font-weight: <%= Time.now.strftime("%w").to_i == day ? "bold" : "normal" %>"><%= (Time.now + (day - Time.now.strftime("%w").to_i) * 24 * 60 * 60).strftime("%a") %></p>
+            <div class="date-container">
+                <% if Time.now.strftime("%w").to_i == day%>
+                  <div class="date-active"> 
+                    <%= Time.now.strftime("%d").to_i %>
+                  </div>
+                <% elsif Time.now.strftime("%d").to_i >= 30 && Time.now.strftime("%m").to_i % 2 == 0%>
+                  <div class="date-not-active"> 
+                    <%= day - Time.now.strftime("%w").to_i < 0 ? Time.now.strftime("%d").to_i + day - Time.now.strftime("%w").to_i : day - Time.now.strftime("%w").to_i%>
+                  </div>
+                <% else %>
+                  <div class="date-not-active">
+                    <%= Time.now.strftime("%d").to_i + day - Time.now.strftime("%w").to_i%>
+                  </div>
+                <% end %>
+            </div>
+          </div>
 
-<% # Startdatum (Anfang der Woche) festlegen %>
-<% current_date = Date.today %>
-<% current_weekday = current_date.wday %>
-
-<% (1..7).each do |day| %>
-  <div class="weekday-item">
-    <!-- Anzeige des Wochentagsnamens; Fett, wenn es heute ist -->
-    <% target_date = current_date + (day - current_weekday) %>
-    <p style="font-weight: <%= current_weekday == day ? "bold" : "normal" %>">
-      <%= target_date.strftime("%a") %>
-    </p>
-
-    <div class="date-container">
-      <!-- Prüfung, ob der Tag das heutige Datum ist -->
-      <% if current_weekday == day %>
-        <div class="date-active">
-          <%= target_date.day %>
-        </div>
-      <% else %>
-        <div class="date-not-active">
-          <% # Korrekte Tagesanzeige für den Wochentag berechnen %>
-          <% displayed_day = target_date.day %>
-          <%= displayed_day %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-<% end %>
-
+        <% end %>
       </div>
 
       <div class="grid-container">

@@ -32,5 +32,4 @@ module TasksHelper
     end
     smallest_value
   end
-
 end
