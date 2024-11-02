@@ -5,6 +5,8 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:update_field]
 
   # GET /tasks or /tasks.json
+  # 
+  
   def index
     @tasks = Task.where(user_id: current_user.id)
     # Sammele alle gerundeten Startzeiten in einem Array
