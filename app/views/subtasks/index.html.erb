@@ -67,61 +67,141 @@
     margin-top: 8px;
 }
 </style>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-  // Select all input and textarea fields that are autosave-enabled
-  const autosaveFields = document.querySelectorAll('.autosave-field');
+  // Hauptfunktion für das Autosave-Feature
+class AutosaveManager {
+  constructor() {
+    this.timeouts = new Map();
+    this.init();
+  }
 
-  autosaveFields.forEach(function(field) {
-    let timeoutId;
-
-    // Function to send the AJAX request
-    const saveTaskField = (taskId, fieldName, fieldValue) => {
-      console.log(`Saving ${fieldName} with value "${fieldValue}" for task ${taskId}`);
-
-      fetch(`/tasks/${taskId}/update_field`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ field_name: fieldName, field_value: fieldValue })
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`);
+  init() {
+    this.attachListeners();
+    
+    // Beobachter für DOM-Änderungen
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          this.attachListeners();
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log(`${fieldName} saved successfully:`, data);
-      })
-      .catch(error => {
-        console.error(`Error saving ${fieldName}:`, error);
       });
-    };
-
-    // Listen to input events
-    field.addEventListener('input', function() {
-      clearTimeout(timeoutId);  // Clear any previous timeout
-      const taskId = this.dataset.taskId;       // Get task ID from data attribute
-      const fieldName = this.dataset.fieldName; // Get field name from data attribute
-      const fieldValue = this.value;            // Get the current value
-
-      // Log the inputs to ensure everything is correct
-      console.log(`Detected input on field ${fieldName} for task ${taskId} with value "${fieldValue}"`);
-
-      // Set a timeout to wait for user to stop typing (debounce)
-      timeoutId = setTimeout(() => {
-        saveTaskField(taskId, fieldName, fieldValue);  // Call the save function
-      }, 1000);  // 1 second debounce
     });
-  });
+
+    // Beobachte den gesamten Body auf Änderungen
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  attachListeners() {
+    const autosaveFields = document.querySelectorAll('.autosave-field');
+    
+    autosaveFields.forEach(field => {
+      // Überprüfe, ob das Feld bereits einen Listener hat
+      if (field.dataset.hasAutosave) return;
+      
+      field.dataset.hasAutosave = 'true';
+      field.addEventListener('input', (e) => this.handleInput(e));
+    });
+  }
+
+  handleInput(event) {
+    const field = event.target;
+    const taskId = field.dataset.taskId;
+    const fieldName = field.dataset.fieldName;
+    const fieldValue = field.value;
+
+    // Lösche vorherige Timeouts für dieses Feld
+    const timeoutKey = `${taskId}-${fieldName}`;
+    if (this.timeouts.has(timeoutKey)) {
+      clearTimeout(this.timeouts.get(timeoutKey));
+    }
+
+    // Setze neuen Timeout
+    const timeoutId = setTimeout(() => {
+      this.saveTaskField(taskId, fieldName, fieldValue);
+    }, 1000);
+
+    this.timeouts.set(timeoutKey, timeoutId);
+  }
+
+  saveTaskField(taskId, fieldName, fieldValue) {
+    console.log(`Saving ${fieldName} with value "${fieldValue}" for task ${taskId}`);
+
+    fetch(`/tasks/${taskId}/update_field`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ field_name: fieldName, field_value: fieldValue })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(`${fieldName} saved successfully:`, data);
+    })
+    .catch(error => {
+      console.error(`Error saving ${fieldName}:`, error);
+    });
+  }
+}
+
+// Initialisiere den AutosaveManager
+document.addEventListener('DOMContentLoaded', () => {
+  window.autosaveManager = new AutosaveManager();
 });
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Funktion zum Senden des subtask_title an das Notes-Title-Feld
+    function saveSubtaskToNoteTitle(taskId) {
+        const subtaskTitleInput = document.querySelector(`input[data-task-id="${taskId}"][data-field-name="subtask_title"]`);
+        
+        if (subtaskTitleInput) {
+            const noteTitle = subtaskTitleInput.value;
 
+            // Sende eine POST-Anfrage an den NotesController, um ein neues Note zu erstellen
+            fetch("/notes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ note: { title: noteTitle } })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log("Note saved successfully:", data.note);
+                    alert("Note was successfully saved!");
+                } else {
+                    console.error("Failed to save note:", data.errors);
+                    alert("Failed to save note.");
+                }
+            })
+            .catch(error => console.error("Error saving note:", error));
+        }
+    }
+
+    // Event-Listener für den "Save to notes" Button
+    document.querySelectorAll("button.save-to-notes").forEach(button => {
+        button.addEventListener("click", function () {
+            const taskId = this.dataset.taskId;
+            saveSubtaskToNoteTitle(taskId);
+        });
+    });
+});
+</script>
 
 <% @tasks.each do |task| %>
     <% if task.repeat_schedule.include?((@day_index-1).to_s) && task.user == current_user %>
@@ -129,11 +209,7 @@
             <div style="background-color: <%= task.color %>; border:none; border-radius: 8px;" class="task-container">
                 <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-title"><%= task.title %></p>
                 <p style="border-bottom: 1px solid black; padding-bottom: 2px;">  <%= task.starting_time %> - <%= task.ending_time %> </p>
-                
-                <div style="margin-top: 4px">
-                    
-                
-                    <p style="margin-top: 12px;">Thats what to do:</p>
+                <button class="save-to-notes" data-task-id="<%= task.id %>">Save to notes</button>                    <p style="margin-top: 12px;">Thats what to do:</p>
                     <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
@@ -148,7 +224,7 @@
                         style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
                 />
                     </div>
-
+                
                 <div class="task-grid">
                     <div>
                         <p >where i left of:</p>
