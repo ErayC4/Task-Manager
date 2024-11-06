@@ -159,44 +159,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Funktion zum Senden des subtask_title an das Notes-Title-Feld
+document.addEventListener("DOMContentLoaded", () => {
+    // Funktion zum Übertragen des Subtask-Titels in das Notiz-Titelfeld und Speichern als neue Notiz
     function saveSubtaskToNoteTitle(taskId) {
         const subtaskTitleInput = document.querySelector(`input[data-task-id="${taskId}"][data-field-name="subtask_title"]`);
+        const subtaskNotesTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="notes"]`)
+        const subtaskQuestionsTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="questions"]`)
+            const button = document.querySelector(`button[data-task-id="${taskId}"]`);
+        const taskTitle = button.dataset.title;  // Der Task-Titel aus dem data-Attribut
         
-        if (subtaskTitleInput) {
-            const noteTitle = subtaskTitleInput.value;
+        if (!subtaskTitleInput) return;
 
-            // Sende eine POST-Anfrage an den NotesController, um ein neues Note zu erstellen
-            fetch("/notes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ note: { title: noteTitle } })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Network response was not ok");
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log("Note saved successfully:", data.note);
-                    alert("Note was successfully saved!");
-                } else {
-                    console.error("Failed to save note:", data.errors);
-                    alert("Failed to save note.");
-                }
-            })
-            .catch(error => console.error("Error saving note:", error));
-        }
+        const noteSubtask = subtaskTitleInput.value;
+        const noteContent = subtaskNotesTextarea.value;
+        const noteQuestion = subtaskQuestionsTextarea.value;
+        // POST-Anfrage zum Erstellen einer neuen Notiz mit dem Subtask-Titel
+        fetch("/notes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ note: { title: taskTitle, content: noteContent, questions: noteQuestion, subtask: noteSubtask} })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Netzwerkantwort war nicht ok");
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                console.log("Notiz erfolgreich gespeichert:", data.note);
+                alert("Notiz wurde erfolgreich gespeichert!");
+            } else {
+                console.error("Fehler beim Speichern der Notiz:", data.errors);
+                alert("Fehler beim Speichern der Notiz.");
+            }
+        })
+        .catch(error => console.error("Fehler beim Speichern der Notiz:", error));
     }
 
-    // Event-Listener für den "Save to notes" Button
+    // Event-Listener für "Save to Notes"-Buttons hinzufügen
     document.querySelectorAll("button.save-to-notes").forEach(button => {
-        button.addEventListener("click", function () {
-            const taskId = this.dataset.taskId;
+        button.addEventListener("click", () => {
+            const taskId = button.dataset.taskId;
             saveSubtaskToNoteTitle(taskId);
         });
     });
@@ -209,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div style="background-color: <%= task.color %>; border:none; border-radius: 8px;" class="task-container">
                 <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-title"><%= task.title %></p>
                 <p style="border-bottom: 1px solid black; padding-bottom: 2px;">  <%= task.starting_time %> - <%= task.ending_time %> </p>
-                <button class="save-to-notes" data-task-id="<%= task.id %>">Save to notes</button>                    <p style="margin-top: 12px;">Thats what to do:</p>
+<button class="save-to-notes" data-task-id="<%= task.id %>" data-title="<%= task.title %>">Save to notes</button>
                     <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
