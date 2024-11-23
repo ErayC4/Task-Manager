@@ -1,17 +1,18 @@
-<div id="<%= dom_id note %>">
-  <p>
-    <strong>Title:</strong>
-    <%= note.title %>
-  </p>
+<style>
+  .note-container{
+    margin-bottom: 16px;
+  }
 
-  <p>
-    <strong>Content:</strong>
-    <%= note.content %>
-  </p>
+  
+  .subtask{
+    font-size: 24px;
+  }
+  
+</style>
 
-  <p>
-    <strong>Questions:</strong>
-    <%= note.questions %>
-  </p>
+<div id="<%= dom_id note %>"class="note-container">
+  <p class="subtask"><%= note.subtask %><p>
+  <p class="content"><%= note.content %><p>
+  <p class="question"><%= note.questions %><p>
 
 </div>

@@ -6,6 +6,8 @@ class NotesController < ApplicationController
     @notes = Note.all
   end
 
+  
+
   # GET /notes/1 or /notes/1.json
   def show
   end
@@ -65,6 +67,6 @@ class NotesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def note_params
-      params.require(:note).permit(:title, :content, :questions)
+      params.require(:note).permit(:title, :content, :questions, :subtask)
     end
 end

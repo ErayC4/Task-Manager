@@ -1,0 +1,11 @@
+
+
+<% displayed_titles = Set.new %> <!-- Set, um doppelte Titel zu vermeiden -->
+
+<% @notes.each do |note| %>
+    <% unless displayed_titles.include?(note.title) %>
+      <p class="title"><%= note.title %></p>
+      <% displayed_titles.add(note.title) %> <!-- Titel zum Set hinzufügen -->
+      </div>
+    <% end %>
+  <% end %>

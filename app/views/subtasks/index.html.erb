@@ -165,7 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const subtaskTitleInput = document.querySelector(`input[data-task-id="${taskId}"][data-field-name="subtask_title"]`);
         const subtaskNotesTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="notes"]`)
         const subtaskQuestionsTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="questions"]`)
-            const button = document.querySelector(`button[data-task-id="${taskId}"]`);
+        
+        const button = document.querySelector(`button[data-task-id="${taskId}"]`);
         const taskTitle = button.dataset.title;  // Der Task-Titel aus dem data-Attribut
         
         if (!subtaskTitleInput) return;
@@ -213,8 +214,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <li>
             <div style="background-color: <%= task.color %>; border:none; border-radius: 8px;" class="task-container">
                 <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-title"><%= task.title %></p>
+                <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-color"><%= task.color %></p>
+
                 <p style="border-bottom: 1px solid black; padding-bottom: 2px;">  <%= task.starting_time %> - <%= task.ending_time %> </p>
-<button class="save-to-notes" data-task-id="<%= task.id %>" data-title="<%= task.title %>">Save to notes</button>
+                <button class="save-to-notes" data-task-id="<%= task.id %>" data-title="<%= task.title %>">Save to notes</button>
                     <div class="subtask-container" style="">
                         <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
