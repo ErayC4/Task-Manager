@@ -14,7 +14,7 @@
         font-size: 16px;
         text-decoration: none; 
         padding: 8px 16px;
-        border: none;
+        border: none; 
         color: black;
         border-radius: 8px;
         display: flex;
@@ -67,6 +67,15 @@
     margin-top: 8px;
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.9.0"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.0"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.3"></script>
 <script>
   // Hauptfunktion für das Autosave-Feature
 class AutosaveManager {
@@ -95,16 +104,22 @@ class AutosaveManager {
   }
 
   attachListeners() {
-    const autosaveFields = document.querySelectorAll('.autosave-field');
-    
-    autosaveFields.forEach(field => {
-      // Überprüfe, ob das Feld bereits einen Listener hat
-      if (field.dataset.hasAutosave) return;
-      
-      field.dataset.hasAutosave = 'true';
-      field.addEventListener('input', (e) => this.handleInput(e));
-    });
-  }
+  const autosaveFields = document.querySelectorAll('.autosave-field, .editor-js');
+  
+  autosaveFields.forEach(field => {
+    if (field.dataset.hasAutosave) return;
+
+    field.dataset.hasAutosave = 'true';
+
+    if (field.classList.contains('editor-js')) {
+      // Editor.js hat seinen eigenen Event-Handler, daher hier nichts tun
+      return;
+    }
+
+    field.addEventListener('input', (e) => this.handleInput(e));
+  });
+}
+
 
   handleInput(event) {
     const field = event.target;
@@ -158,56 +173,89 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Funktion zum Übertragen des Subtask-Titels in das Notiz-Titelfeld und Speichern als neue Notiz
-    function saveSubtaskToNoteTitle(taskId) {
-        const subtaskTitleInput = document.querySelector(`input[data-task-id="${taskId}"][data-field-name="subtask_title"]`);
-        const subtaskNotesTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="notes"]`)
-        const subtaskQuestionsTextarea = document.querySelector(`textarea[data-task-id="${taskId}"][data-field-name="questions"]`)
-        
-        const button = document.querySelector(`button[data-task-id="${taskId}"]`);
-        const taskTitle = button.dataset.title;  // Der Task-Titel aus dem data-Attribut
-        
-        if (!subtaskTitleInput) return;
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Editor.js with specified tools
+  const editor = new EditorJS({
+    holder: 'editorjs',
+    headers: {
+    "Content-Type": "application/json",
+    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+  },
 
-        const noteSubtask = subtaskTitleInput.value;
-        const noteContent = subtaskNotesTextarea.value;
-        const noteQuestion = subtaskQuestionsTextarea.value;
-        // POST-Anfrage zum Erstellen einer neuen Notiz mit dem Subtask-Titel
-        fetch("/notes", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ note: { title: taskTitle, content: noteContent, questions: noteQuestion, subtask: noteSubtask} })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Netzwerkantwort war nicht ok");
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'success') {
-                console.log("Notiz erfolgreich gespeichert:", data.note);
-                alert("Notiz wurde erfolgreich gespeichert!");
-            } else {
-                console.error("Fehler beim Speichern der Notiz:", data.errors);
-                alert("Fehler beim Speichern der Notiz.");
-            }
-        })
-        .catch(error => console.error("Fehler beim Speichern der Notiz:", error));
+    tools: {
+      paragraph: {
+        class: Paragraph,
+        inlineToolbar: true
+      },
+      header: {
+        class: Header,
+        config: {
+          levels: [2, 3, 4],
+          defaultLevel: 2
+        }
+      },
+      list: {
+        class: List,
+        inlineToolbar: true,
+        config: {
+          defaultStyle: 'unordered'
+        }
+      },
+      code: {
+        class: CodeTool
+      }
+    },
+    data: {
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            text: "Start writing your content here..."
+          }
+        }
+      ]
+    },
+    async onChange() {
+  try {
+    const outputData = await editor.save();
+    const fieldValue = JSON.stringify(outputData);
+    const taskId = document.querySelector('.editor-js').dataset.taskId; // Füge taskId als Attribut hinzu
+    const fieldName = 'content';
+
+    // Trigger Autosave
+    autosaveManager.saveTaskField(taskId, fieldName, fieldValue);
+  } catch (e) {
+    console.error('Error saving editor data:', e);
+  }
+},
+
+    onReady() {
+      console.log('Editor.js is ready!');
+    },
+    onError(error) {
+      console.error('Editor.js initialization error:', error);
     }
+  });
 
-    // Event-Listener für "Save to Notes"-Buttons hinzufügen
-    document.querySelectorAll("button.save-to-notes").forEach(button => {
-        button.addEventListener("click", () => {
-            const taskId = button.dataset.taskId;
-            saveSubtaskToNoteTitle(taskId);
-        });
+  // Handle form submission
+  const form = document.getElementById('article-form');
+  if (form) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const outputData = await editor.save();
+        document.getElementById('content-input').value = JSON.stringify(outputData);
+        form.submit();  // Submit the form after saving the content
+      } catch (e) {
+        console.error('Failed to save data on form submission:', e);
+      }
     });
+  }
 });
 </script>
+
 
 <% @tasks.each do |task| %>
     <% if task.repeat_schedule.include?((@day_index-1).to_s) && task.user == current_user %>
@@ -231,39 +279,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         value="<%= task.subtask_title %>" 
                         style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
                 />
-                    </div>
-                
-                <div class="task-grid">
-                    <div>
-                        <p >where i left of:</p>
-                        <input type="text" class="autosave-field" 
-                        data-task-id="<%= task.id %>" 
-                        data-field-name="subtask_left_of_at"
-                        value="<%= task.subtask_left_of_at %>" 
-                        style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" />
-
-                        <p style="margin-top: 8px;">Questions: </p>
-                        <textarea class="autosave-field" 
-                            data-task-id="<%= task.id %>" 
-                            data-field-name="questions" 
-                            style="box-sizing: border-box; height: 128px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.questions %></textarea>
-
-                    </div>
-                    <div>
-                        <p>Notes: </p>
-                        <textarea class="autosave-field" 
-                            data-task-id="<%= task.id %>" 
-                            data-field-name="notes" 
-                            style="box-sizing: border-box; height: 180px; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);"><%= task.notes %></textarea>
-
-                    
-
-                    </div>
-                </div>
-                
-                
-                </div>
             </div>
+            <div id="editorjs" class="editor-js" data-task-id="<%= task.id %>" style="..."></div>
         </li>
     <% end %>
 <% end %>
+

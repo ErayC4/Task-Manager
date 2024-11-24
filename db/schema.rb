@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_07_153411) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_24_173608) do
   create_table "notes", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -38,6 +38,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_07_153411) do
     t.boolean "subtask_finished"
     t.string "color"
     t.text "questions"
+    t.json "content"
     t.index ["subtask_id"], name: "index_tasks_on_subtask_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end

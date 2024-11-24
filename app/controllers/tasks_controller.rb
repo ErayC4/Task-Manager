@@ -6,6 +6,8 @@ class TasksController < ApplicationController
 
   # GET /tasks or /tasks.json
   def index
+    @editor_data = @task.content.presence || { blocks: [{ type: "paragraph", data: { text: "Start writing your content here..." } }] }
+
     @tasks = Task.where(user_id: current_user.id)
     # Sammele alle gerundeten Startzeiten in einem Array
     @rounded_starting_time_array = @tasks.map do |task|
@@ -119,7 +121,7 @@ class TasksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def task_params
-      params.require(:task).permit(:title, :notes, :questions, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id, :subtask_id)    
+      params.require(:task).permit(:title, :notes, :questions, :revised, :repeat_schedule, :ending_time, :starting_time, :user_id, :subtask_id, :content)    
     end
     
 end
