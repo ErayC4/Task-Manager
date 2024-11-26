@@ -6,7 +6,6 @@ class TasksController < ApplicationController
 
   # GET /tasks or /tasks.json
   def index
-    @editor_data = @task.content.presence || { blocks: [{ type: "paragraph", data: { text: "Start writing your content here..." } }] }
 
     @tasks = Task.where(user_id: current_user.id)
     # Sammele alle gerundeten Startzeiten in einem Array

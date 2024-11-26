@@ -1,287 +1,50 @@
 <style>
-    .task-title {
-        cursor: pointer;
-        font-size: 20px;
-        
-    }
-
-    .task-container {
-        padding: 8px 16px;
-        margin-bottom: 32px;
-    }
-
-    .create-subtask-button {
-        font-size: 16px;
-        text-decoration: none; 
-        padding: 8px 16px;
-        border: none; 
-        color: black;
-        border-radius: 8px;
-        display: flex;
-        background-color: white;
-        display: inline-block;
-    }
-    .subtask-container {
-        display: flex;
-        gap: 4px;
-        border: none;
-        align-items: center;
-        
-    }
-
-    .finished-button {
-        background-color: transparent;
-        border: none;
-    }
-    .task-grid {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-        margin-top: 16px;
-    }
-    .left-of-inputfield {
-    width: 100%; /* Nimmt die volle Breite des übergeordneten Containers */
-    max-width: 100%; /* Überschreitet nicht die Breite des Containers */
-    box-sizing: border-box; /* Stellt sicher, dass Padding und Border in die Breitenberechnung einbezogen werden */
+  .workspace{
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    width: 100%; 
+    gap: 64px;
+  }
+  .task {
+    height: 40px;
+    padding-left: 8px;
+    box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.2);
+    display: flex;              /* Flexbox aktivieren */
+    align-items: center;        /* Vertikale Zentrierung */
+    justify-content: flex-start; /* Text linksbündig halten */
 }
 
-.notes-textarea {
-    width: 100%;
-    max-width: 100%; /* Verhindert, dass das Textarea-Element breiter als der Container wird */
-    box-sizing: border-box; /* Stellt sicher, dass Padding und Border in die Breitenberechnung einbezogen werden */
-}
-
-.repeat-button {
-    background-color: white;
-    border: none;
-    display: flex;
-    color: black;
-    border: none;
-    border-radius: 8px;
-    padding: 4px 12px;
-}
-.finished-buttons-container {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
+  .editor-js{
+    background-color: cyan;
+  }
 </style>
+<%= javascript_include_tag "editor_controller" %>
+
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.9.0"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.0"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.3"></script>
-<script>
-  // Hauptfunktion für das Autosave-Feature
-class AutosaveManager {
-  constructor() {
-    this.timeouts = new Map();
-    this.init();
-  }
-
-  init() {
-    this.attachListeners();
-    
-    // Beobachter für DOM-Änderungen
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.addedNodes.length) {
-          this.attachListeners();
-        }
-      });
-    });
-
-    // Beobachte den gesamten Body auf Änderungen
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  attachListeners() {
-  const autosaveFields = document.querySelectorAll('.autosave-field, .editor-js');
-  
-  autosaveFields.forEach(field => {
-    if (field.dataset.hasAutosave) return;
-
-    field.dataset.hasAutosave = 'true';
-
-    if (field.classList.contains('editor-js')) {
-      // Editor.js hat seinen eigenen Event-Handler, daher hier nichts tun
-      return;
-    }
-
-    field.addEventListener('input', (e) => this.handleInput(e));
-  });
-}
 
 
-  handleInput(event) {
-    const field = event.target;
-    const taskId = field.dataset.taskId;
-    const fieldName = field.dataset.fieldName;
-    const fieldValue = field.value;
 
-    // Lösche vorherige Timeouts für dieses Feld
-    const timeoutKey = `${taskId}-${fieldName}`;
-    if (this.timeouts.has(timeoutKey)) {
-      clearTimeout(this.timeouts.get(timeoutKey));
-    }
-
-    // Setze neuen Timeout
-    const timeoutId = setTimeout(() => {
-      this.saveTaskField(taskId, fieldName, fieldValue);
-    }, 1000);
-
-    this.timeouts.set(timeoutKey, timeoutId);
-  }
-
-  saveTaskField(taskId, fieldName, fieldValue) {
-    console.log(`Saving ${fieldName} with value "${fieldValue}" for task ${taskId}`);
-
-    fetch(`/tasks/${taskId}/update_field`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ field_name: fieldName, field_value: fieldValue })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log(`${fieldName} saved successfully:`, data);
-    })
-    .catch(error => {
-      console.error(`Error saving ${fieldName}:`, error);
-    });
-  }
-}
-
-// Initialisiere den AutosaveManager
-document.addEventListener('DOMContentLoaded', () => {
-  window.autosaveManager = new AutosaveManager();
-});
-
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Editor.js with specified tools
-  const editor = new EditorJS({
-    holder: 'editorjs',
-    headers: {
-    "Content-Type": "application/json",
-    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-  },
-
-    tools: {
-      paragraph: {
-        class: Paragraph,
-        inlineToolbar: true
-      },
-      header: {
-        class: Header,
-        config: {
-          levels: [2, 3, 4],
-          defaultLevel: 2
-        }
-      },
-      list: {
-        class: List,
-        inlineToolbar: true,
-        config: {
-          defaultStyle: 'unordered'
-        }
-      },
-      code: {
-        class: CodeTool
-      }
-    },
-    data: {
-      blocks: [
-        {
-          type: "paragraph",
-          data: {
-            text: "Start writing your content here..."
-          }
-        }
-      ]
-    },
-    async onChange() {
-  try {
-    const outputData = await editor.save();
-    const fieldValue = JSON.stringify(outputData);
-    const taskId = document.querySelector('.editor-js').dataset.taskId; // Füge taskId als Attribut hinzu
-    const fieldName = 'content';
-
-    // Trigger Autosave
-    autosaveManager.saveTaskField(taskId, fieldName, fieldValue);
-  } catch (e) {
-    console.error('Error saving editor data:', e);
-  }
-},
-
-    onReady() {
-      console.log('Editor.js is ready!');
-    },
-    onError(error) {
-      console.error('Editor.js initialization error:', error);
-    }
-  });
-
-  // Handle form submission
-  const form = document.getElementById('article-form');
-  if (form) {
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      try {
-        const outputData = await editor.save();
-        document.getElementById('content-input').value = JSON.stringify(outputData);
-        form.submit();  // Submit the form after saving the content
-      } catch (e) {
-        console.error('Failed to save data on form submission:', e);
-      }
-    });
-  }
-});
-</script>
-
-
-<% @tasks.each do |task| %>
-    <% if task.repeat_schedule.include?((@day_index-1).to_s) && task.user == current_user %>
-        <li>
-            <div style="background-color: <%= task.color %>; border:none; border-radius: 8px;" class="task-container">
-                <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-title"><%= task.title %></p>
-                <p onclick="window.location.href='/tasks/<%= task.id %>';" class="task-color"><%= task.color %></p>
-
-                <p style="border-bottom: 1px solid black; padding-bottom: 2px;">  <%= task.starting_time %> - <%= task.ending_time %> </p>
-                <button class="save-to-notes" data-task-id="<%= task.id %>" data-title="<%= task.title %>">Save to notes</button>
-                    <div class="subtask-container" style="">
-                        <%= button_to toggle_finished_subtask_path(task), method: :patch, class: "finished-button" do %>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                            </svg>  
-                        <% end %>
-                        <input type="text" class="autosave-field" 
-                        data-task-id="<%= task.id %>" 
-                        data-field-name="subtask_title"
-                        value="<%= task.subtask_title %>" 
-                        style="box-sizing: border-box; width: 100%; border: none; border-radius: 8px; padding: 4px 12px; background-color: <%= task.color %>; filter: brightness(90%);" 
-                />
-            </div>
-            <div id="editorjs" class="editor-js" data-task-id="<%= task.id %>" style="..."></div>
-        </li>
+<div class="workspace">
+  <div class="tasks-container">
+    <% @tasks.each do |task| %>
+      <p class="task" style="background-color: <%= task.color %>"><%= task.title %><p>
     <% end %>
-<% end %>
+  </div>
+  
+    <div class="text-editor">
+      <% @tasks.each do |task| %>
+        <div id="editorjs-<%= task.id %>" class="editor-js" data-task-id="<%= task.id %>" style="..."></div>
+      <% end %>
+    </div>
 
+    <div class="table-of-contents">
+      <% @tasks.each do |task| %>
+        <p style="background-color: <%= task.color %>">Beispiel</p>
+      <% end %>
+    </div>
+
+</div>
