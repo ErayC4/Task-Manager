@@ -129,15 +129,23 @@
 
 <div class="workspace">
   <div class="tasks-container">
-    <% @tasks.each do |task| %>
-      <p class="task" id="<%= task.id %>"style="background-color: <%= task.color %>"><%= task.title %><p>
-    <% end %>
+    <div class="tasks-container">
+      <% @tasks.uniq { |task| task.title }.each do |task| %>
+        <p class="task" id="<%= task.id %>" style="background-color: <%= task.color %>"><%= task.title %></p>
+      <% end %>
+    </div>
   </div>
   
     <div class="text-editor">
       
       <% @tasks.each do |task| %>
-        <div id="editorjs-<%= task.id %>" class="editor-js" data-task-id="<%= task.id %>" style="display: none;"></div>      
+        <div 
+            id="editorjs-<%= task.id %>" 
+            class="editor-js" 
+            data-task-id="<%= task.id %>" 
+            data-initial-content="<%= task.content.present? ? h(task.content) : '' %>" 
+            style="display: none;">
+          </div>      
       <% end %>
     </div>
 

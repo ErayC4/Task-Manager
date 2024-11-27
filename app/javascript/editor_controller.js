@@ -97,6 +97,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.editor-js').forEach((editorElement) => {
     const taskId = editorElement.dataset.taskId;
+    const initialContent = editorElement.dataset.initialContent; // JSON-Inhalt von task.content
+
+    let editorData;
+    try {
+      // Parse den initialen Inhalt, falls vorhanden
+      editorData = initialContent ? JSON.parse(initialContent) : { blocks: [] };
+    } catch (e) {
+      console.error(`Error parsing initial content for task ${taskId}:`, e);
+      editorData = { blocks: [] }; // Fallback auf leere Daten
+    }
 
     const editor = new EditorJS({
       holder: editorElement.id,
@@ -106,14 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         list: { class: List, inlineToolbar: true, config: { defaultStyle: 'unordered' } },
         code: { class: CodeTool }
       },
-      data: {
-        blocks: [
-          {
-            type: "paragraph",
-            data: { text: "Start writing your content here..." }
-          }
-        ]
-      },
+      data: editorData, // Vorbefüllte Daten
       async onChange() {
         try {
           const outputData = await editor.save();
