@@ -11,7 +11,7 @@ class SubtasksController < ApplicationController
     
     @day_index = day_of_week
     @editor_data = @task&.content.presence || { blocks: [{ type: "paragraph", data: { text: "Start writing your content here..." } }] }
-
+    
   end
 
   def toggle_finished

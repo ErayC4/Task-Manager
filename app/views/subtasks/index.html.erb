@@ -4,17 +4,22 @@
     grid-template-columns: 1fr 4fr 1fr;
     width: 100%; 
     gap: 64px;
-    margin-top: 64px;
+    margin-top: 32px;
   }
   .task {
     height: 40px;
-    padding-left: 8px;
+    padding-left: 16px;
     box-shadow: 0px -3px 3px rgba(0, 0, 0, 0.2);
-    display: flex;              /* Flexbox aktivieren */
-    align-items: center;        /* Vertikale Zentrierung */
-    justify-content: flex-start; /* Text linksbündig halten */
+    display: flex;             
+    align-items: center;       
+    justify-content: flex-start;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
+  .task:hover {
+    transform: scaleX(1.1);  /* Vergrößerung um 10% */
+  }
   .editor-js{
     box-shadow: 0 0px 12px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
@@ -22,7 +27,14 @@
     padding: 16px 96px;
     margin-bottom: 200px;
     height: 800px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: scale(0.9);
   }
+  .editor-js[style="display: block;"] {
+    opacity: 1;
+    transform: scale(1);
+}
 
   .table-of-contents-item{
     border-bottom: solid 1px #ccc;
@@ -30,7 +42,7 @@
     align-items: center;
     height: 28px;
   }
-  .table-of-contents{
+  .table-of-contents{ 
     box-shadow: 0px 12px 12px rgba(0, 0, 0, 0.2);
   }
   .table-of-contents-header{
@@ -58,6 +70,32 @@
   }
 
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const taskElements = document.querySelectorAll('.task');
+    const editorElements = document.querySelectorAll('.editor-js');
+
+    // Event-Listener für Task-Elemente
+    taskElements.forEach(function(taskElement) {
+        taskElement.addEventListener('click', function() {
+            const clickedId = this.id;
+
+            // Alle Editor-Divs ausblenden
+            editorElements.forEach(function(editorElement) {
+                editorElement.style.display = 'none';
+            });
+
+            // Editor-Div für die geklickte Task-ID anzeigen
+            const activeEditor = document.querySelector(`#editorjs-${clickedId}`);
+            if (activeEditor) {
+                activeEditor.style.display = 'block';
+            }
+        });
+    });
+});
+
+</script>
 <%= javascript_include_tag "editor_controller" %>
 
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
@@ -71,13 +109,14 @@
 <div class="workspace">
   <div class="tasks-container">
     <% @tasks.each do |task| %>
-      <p class="task" style="background-color: <%= task.color %>"><%= task.title %><p>
+      <p class="task" id="<%= task.id %>"style="background-color: <%= task.color %>"><%= task.title %><p>
     <% end %>
   </div>
   
     <div class="text-editor">
+      
       <% @tasks.each do |task| %>
-        <div id="editorjs-<%= task.id %>" class="editor-js" data-task-id="<%= task.id %>" style="..."></div>
+        <div id="editorjs-<%= task.id %>" class="editor-js" data-task-id="<%= task.id %>" style="display: none;"></div>      
       <% end %>
     </div>
 
@@ -95,15 +134,21 @@
       <div class="table-of-contents">
         
         <% @tasks.each do |task| %>
-        <div class="table-of-contents-item">
-          <%# hier gucken das wenn man drüber hovert das svg auf black wird %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-          </svg>
-          <p><%= task.title%></p>
-
-        </div>
+          <% if task.content.present? %>
+            <% parsed_content = JSON.parse(task.content) %>
+            <% parsed_content['blocks'].each do |block| %>
+              <% if block['type'] == 'header' %>
+                <div class="table-of-contents-item">
+                  <p class="topic"><%= block['data']['text'] %></p>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
         <% end %>
+
+
+
+
       </div>
     </div>
 </div>
