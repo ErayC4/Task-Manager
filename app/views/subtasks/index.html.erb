@@ -73,13 +73,31 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const taskElements = document.querySelectorAll('.task');
-    const editorElements = document.querySelectorAll('.editor-js');
+    const taskElements = document.querySelectorAll('.task'); // Tasks auswählen
+    const editorElements = document.querySelectorAll('.editor-js'); // Editor-Divs auswählen
+
+    // Funktion zum Abrufen der kleinsten ID
+    function getSmallestTaskId() {
+        const ids = Array.from(taskElements).map(task => parseInt(task.id, 10));
+        return Math.min(...ids); // Kleinste ID berechnen
+    }
+
+    // Standardmäßig aktives Element initialisieren
+    function initializeDefault() {
+        const smallestId = getSmallestTaskId(); // Kleinste ID ermitteln
+
+        // Alle `editor-js`-Elemente ausblenden
+        editorElements.forEach(editor => editor.style.display = 'none');
+
+        // Editor-Div mit der kleinsten ID anzeigen
+        const defaultEditor = document.querySelector(`#editorjs-${smallestId}`);
+        if (defaultEditor) defaultEditor.style.display = 'block';
+    }
 
     // Event-Listener für Task-Elemente
     taskElements.forEach(function(taskElement) {
         taskElement.addEventListener('click', function() {
-            const clickedId = this.id;
+            const clickedId = this.id; // ID des geklickten Tasks ermitteln
 
             // Alle Editor-Divs ausblenden
             editorElements.forEach(function(editorElement) {
@@ -93,6 +111,9 @@
             }
         });
     });
+
+    // Standardmäßige Initialisierung
+    initializeDefault();
 });
 
 </script>
