@@ -26,27 +26,19 @@
     border: none;
     padding: 16px 96px;
     margin-bottom: 200px;
-    height: 800px;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    opacity: 0;
-    transform: scale(0.9);
   }
-  .editor-js[style="display: block;"] {
-    opacity: 1;
-    transform: scale(1);
-}
-
+  
+  .table-of-contents{
+    filter: brightness(110%);
+  }
   .table-of-contents-item{
-    border-bottom: solid 1px #ccc;
     display: flex;
     align-items: center;
-    height: 28px;
+    height: 40px;
+    padding-left: 4px;
   }
-  .table-of-contents{ 
-    box-shadow: 0px 12px 12px rgba(0, 0, 0, 0.2);
-  }
+  
   .table-of-contents-header{
-    background-color: #FDE1AC;
     padding-bottom: 8px;
     padding-top: 8px;
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
@@ -63,60 +55,14 @@
     align-items: center;
     padding-left: 8px;
     border-radius: 4px;
-    background-color: #FDE1AC;
-    filter: brightness(90%);
+    background-color: #f5f5f5;
     margin: 0 8px;
     gap: 4px;
   }
 
 </style>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const taskElements = document.querySelectorAll('.task'); // Tasks auswählen
-    const editorElements = document.querySelectorAll('.editor-js'); // Editor-Divs auswählen
 
-    // Funktion zum Abrufen der kleinsten ID
-    function getSmallestTaskId() {
-        const ids = Array.from(taskElements).map(task => parseInt(task.id, 10));
-        return Math.min(...ids); // Kleinste ID berechnen
-    }
-
-    // Standardmäßig aktives Element initialisieren
-    function initializeDefault() {
-        const smallestId = getSmallestTaskId(); // Kleinste ID ermitteln
-
-        // Alle `editor-js`-Elemente ausblenden
-        editorElements.forEach(editor => editor.style.display = 'none');
-
-        // Editor-Div mit der kleinsten ID anzeigen
-        const defaultEditor = document.querySelector(`#editorjs-${smallestId}`);
-        if (defaultEditor) defaultEditor.style.display = 'block';
-    }
-
-    // Event-Listener für Task-Elemente
-    taskElements.forEach(function(taskElement) {
-        taskElement.addEventListener('click', function() {
-            const clickedId = this.id; // ID des geklickten Tasks ermitteln
-
-            // Alle Editor-Divs ausblenden
-            editorElements.forEach(function(editorElement) {
-                editorElement.style.display = 'none';
-            });
-
-            // Editor-Div für die geklickte Task-ID anzeigen
-            const activeEditor = document.querySelector(`#editorjs-${clickedId}`);
-            if (activeEditor) {
-                activeEditor.style.display = 'block';
-            }
-        });
-    });
-
-    // Standardmäßige Initialisierung
-    initializeDefault();
-});
-
-</script>
 <%= javascript_include_tag "editor_controller" %>
 
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
@@ -125,7 +71,94 @@
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.3"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    let selectedTask = null;
 
+    const tasks = document.querySelectorAll(".task");
+    tasks.forEach(task => {
+        task.addEventListener("click", (event) => {
+            const clickedTaskId = event.target.id;
+
+            // 1. Task skalieren und alte Skalierung entfernen
+            if (selectedTask) {
+                selectedTask.style.transform = "scaleX(1)";
+            }
+            selectedTask = event.target;
+            selectedTask.style.transform = "scaleX(1.1)";
+            const taskTitle = event.target.textContent.trim();
+            displayTaskName(taskTitle);
+            // 2. Editor für den aktuellen Task anzeigen
+            showEditorForTask(clickedTaskId);
+
+            // 3. Table of Contents für den aktuellen Task aktualisieren
+            showTableOfContentsForTask(clickedTaskId);
+        });
+    });
+
+    function showEditorForTask(taskId) {
+        const editors = document.querySelectorAll(".editor-js");
+        editors.forEach(editor => {
+            editor.style.display = "none";
+        });
+
+        const editorToShow = document.getElementById(`editorjs-${taskId}`);
+        if (editorToShow) {
+            editorToShow.style.display = "block";
+        }
+    }
+
+    function displayTaskName(taskTitle) {
+        // Finde das Element, wo der Titel angezeigt werden soll
+        const taskNameElement = document.querySelector(".table-of-contents-header p");
+        if (taskNameElement) {
+            taskNameElement.textContent = taskTitle;
+        }
+    }
+
+    function showTableOfContentsForTask(taskId) {
+        const tables = document.querySelectorAll(".table-of-contents");
+        tables.forEach(table => {
+            if (table.getAttribute("data-task-id") === taskId) {
+                table.style.display = "block";
+            } else {
+                table.style.display = "none";
+            }
+        });
+    }
+
+    function selectDefaultTask() {
+        let smallestIdTask = null;
+        let smallestId = Infinity;
+
+        tasks.forEach(task => {
+            const taskId = parseInt(task.id, 10);
+            if (taskId < smallestId) {
+                smallestId = taskId;
+                smallestIdTask = task;
+            }
+        });
+
+        if (smallestIdTask) {
+            smallestIdTask.click(); // Simuliere einen Klick auf den Task
+        }
+    }
+
+    // Initialisieren
+    const editors = document.querySelectorAll(".editor-js");
+    editors.forEach(editor => {
+        editor.style.display = "none";
+    });
+
+    const tables = document.querySelectorAll(".table-of-contents");
+    tables.forEach(table => {
+        table.style.display = "none";
+    });
+
+    selectDefaultTask(); // Default-Task auswählen
+});
+
+</script>
 
 <div class="workspace">
   <div class="tasks-container">
@@ -144,7 +177,7 @@
             class="editor-js" 
             data-task-id="<%= task.id %>" 
             data-initial-content="<%= task.content.present? ? h(task.content) : '' %>" 
-            style="display: none;">
+            >
           </div>      
       <% end %>
     </div>
@@ -160,24 +193,21 @@
           <input class="table-of-contents-input-field" type="text" placeholder="Suche in Task...">
         </div>
       </div>
-      <div class="table-of-contents">
-        
         <% @tasks.each do |task| %>
+        <div 
+          class="table-of-contents" 
+          style="display: none;" 
+          data-task-id="<%= task.id %>">
           <% if task.content.present? %>
             <% parsed_content = JSON.parse(task.content) %>
             <% parsed_content['blocks'].each do |block| %>
-              <% if block['type'] == 'header' %>
-                <div class="table-of-contents-item">
-                  <p class="topic"><%= block['data']['text'] %></p>
-                </div>
+              <% if block['type'] == 'header' && block['data']['level'] == 2 %>
+                <p class="table-of-contents-item"><%= block['data']['text'] %></p>
               <% end %>
             <% end %>
           <% end %>
-        <% end %>
+        </div>
+      <% end %>
 
-
-
-
-      </div>
     </div>
 </div>
