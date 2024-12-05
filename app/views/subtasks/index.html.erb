@@ -1,7 +1,7 @@
 <style>
   .workspace{
     display: grid;
-    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-columns: 1fr 5fr 1.5fr;
     width: 100%; 
     gap: 64px;
     margin-top: 32px;
@@ -9,7 +9,6 @@
   .task {
     height: 40px;
     padding-left: 16px;
-    box-shadow: 0px -3px 3px rgba(0, 0, 0, 0.2);
     display: flex;             
     align-items: center;       
     justify-content: flex-start;
@@ -41,7 +40,6 @@
   .table-of-contents-header{
     padding-bottom: 8px;
     padding-top: 8px;
-    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
 
   }
   .table-of-contents-input-field{
@@ -76,7 +74,41 @@
 
 
 </script>
+<div class="toolbar-container">
+  <div class="toolbar-left">
+    <p>Import</p>
+    <p>Download</p>
+  <div>
+  <div class="toolbar-middle">
+    <div class="font-apperance-changer">
+      <div class="font-size-changer">
+        <p>h1</p>
+        <p>h2</p>
+        <p>color</p>
+      </div>
+      <div class="font-style-changer">
+        <p>bold</p>
+        <p>cursive</p>
+        <p>underlined</p>
+        <p>code</p>
+      </div>   
+    <div class="font-allignment-changer"> 
+      <p>unordered list</p>
+      <p>numbered list</p>
+    </div>
 
+    <div class="actions">
+      <p>copy</p>
+      <p>paste</p>
+      <p>ai generate</p>
+    </div>
+  </div>
+  <div class="toolbar-right">
+    <p>Todo</p>
+    <p>Inhaltsverzeichis</p>
+    <p>Fragen generator</p>
+  </div>
+</div>
 <div class="workspace">
   <div class="tasks-container">
     <div class="tasks-container">
@@ -101,7 +133,7 @@
 
     <div>
       <div class="table-of-contents-header">
-        <p style="padding-left: 8px; padding-bottom: 4px;">TaskName</p>
+        <p style="padding-left: 8px; padding-bottom: 4px;">{here sits the task name}</p>
         <div class="table-of-contents-search-bar">
           
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
