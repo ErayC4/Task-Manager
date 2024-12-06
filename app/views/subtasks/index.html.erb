@@ -1,4 +1,13 @@
 <style>
+  .toolbar-container {
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    
+  }
+  .toolbar-icon{
+    height: 20px;
+    width: 20px;
+  }
   .workspace{
     display: grid;
     grid-template-columns: 1fr 5fr 1.5fr;
@@ -76,39 +85,45 @@
 </script>
 <div class="toolbar-container">
   <div class="toolbar-left">
-    <p>Import</p>
-    <p>Download</p>
-  <div>
+    <%= image_tag 'toolbar/share.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+    <p>Download as PDF</p>
+    <%= image_tag 'toolbar/download.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+  </div>
+  
   <div class="toolbar-middle">
-    <div class="font-apperance-changer">
-      <div class="font-size-changer">
-        <p>h1</p>
-        <p>h2</p>
-        <p>color</p>
+    <div class="font-appearance-changer">
+      <div class="font-appearance-changer">
+        <%= image_tag 'toolbar/type-h1.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/type-h2.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/highlighter.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
       </div>
+      
       <div class="font-style-changer">
-        <p>bold</p>
-        <p>cursive</p>
-        <p>underlined</p>
-        <p>code</p>
-      </div>   
-    <div class="font-allignment-changer"> 
-      <p>unordered list</p>
-      <p>numbered list</p>
+        <%= image_tag 'toolbar/type-bold.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/type-italic.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/type-underline.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/code-slash.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+      </div>
+      
+      <div class="font-allignment-changer">
+        <%= image_tag 'toolbar/list-ol.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+        <%= image_tag 'toolbar/list-ul.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+      </div>
     </div>
-
+    
     <div class="actions">
-      <p>copy</p>
-      <p>paste</p>
-      <p>ai generate</p>
+      <%= image_tag 'toolbar/clipboard.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+      <%= image_tag 'toolbar/magic.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
     </div>
   </div>
+  
   <div class="toolbar-right">
-    <p>Todo</p>
-    <p>Inhaltsverzeichis</p>
-    <p>Fragen generator</p>
+    <%= image_tag 'toolbar/card-checklist.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+    <%= image_tag 'toolbar/journal-text.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
+    <%= image_tag 'toolbar/magic.svg', alt: 'Beschreibung', class: "toolbar-icon" %>
   </div>
 </div>
+
 <div class="workspace">
   <div class="tasks-container">
     <div class="tasks-container">
